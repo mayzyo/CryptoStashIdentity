@@ -33,17 +33,9 @@ namespace CryptoStashIdentity
 
             // Setup Entity Core connection to PostgreSQL.
             NpgsqlConnectionStringBuilder connBuilder;
-            if (Environment.GetEnvironmentVariable("PGSQLCONNSTR_IdentityDb") != null)
-            {
-                // Get connection string from environment variable.
-                connBuilder = new NpgsqlConnectionStringBuilder(Environment.GetEnvironmentVariable("PGSQLCONNSTR_IdentityDb"));
-            }
-            else
-            {
-                // Get connection string from user secrets.
-                connBuilder = new NpgsqlConnectionStringBuilder(Configuration.GetConnectionString("IdentityDb"));
-                if (Configuration["IdentityDb"] != null) connBuilder.Password = Configuration["IdentityDb"];
-            }
+            // Get connection string from user secrets.
+            connBuilder = new NpgsqlConnectionStringBuilder(Configuration.GetConnectionString("IdentityDb"));
+            if (Configuration["IdentityDb"] != null) connBuilder.Password = Configuration["IdentityDb"];
 
             //services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connBuilder.ConnectionString));
             //services.AddDbContext<ApplicationDbContext>(options => 

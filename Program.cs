@@ -12,12 +12,13 @@ using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 using System;
 using System.Linq;
+using System.Threading;
 
 namespace CryptoStashIdentity
 {
     public class Program
     {
-        public static int Main(string[] args)
+        public static void Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
@@ -38,45 +39,28 @@ namespace CryptoStashIdentity
 
             try
             {
-                var seed = args.Contains("/seed");
-                if (seed)
-                {
-                    args = args.Except(new[] { "/seed" }).ToArray();
-                }
-
                 var host = CreateHostBuilder(args).Build();
 
-                if (seed)
+                if (Environment.GetEnvironmentVariable("SEED") != null)
                 {
                     Log.Information("Seeding database...");
                     var config = host.Services.GetRequiredService<IConfiguration>();
                     // Setup Entity Core connection to PostgreSQL.
                     NpgsqlConnectionStringBuilder connBuilder;
-                    if (Environment.GetEnvironmentVariable("PGSQLCONNSTR_IdentityDb") != null)
-                    {
-                        // Get connection string from environment variable.
-                        connBuilder = new NpgsqlConnectionStringBuilder(Environment.GetEnvironmentVariable("PGSQLCONNSTR_IdentityDb"));
-                    }
-                    else
-                    {
-                        // Get connection string from user secrets.
-                        connBuilder = new NpgsqlConnectionStringBuilder(config.GetConnectionString("IdentityDb"));
-                        if (config["IdentityDb"] != null) connBuilder.Password = config["IdentityDb"];
-                    }
-                    //var connectionString = config.GetConnectionString("DefaultConnection");
+                    // Get connection string from user secrets.
+                    connBuilder = new NpgsqlConnectionStringBuilder(config.GetConnectionString("IdentityDb"));
+                    if (config["IdentityDb"] != null) connBuilder.Password = config["IdentityDb"];
                     SeedData.EnsureSeedData(connBuilder.ConnectionString);
                     Log.Information("Done seeding database.");
-                    return 0;
                 }
 
                 Log.Information("Starting host...");
                 host.Run();
-                return 0;
             }
             catch (Exception ex)
             {
                 Log.Fatal(ex, "Host terminated unexpectedly.");
-                return 1;
+                throw;
             }
             finally
             {

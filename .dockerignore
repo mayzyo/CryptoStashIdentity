@@ -23,6 +23,5 @@
 **/values.dev.yaml
 kubernetes.yaml
 openapi.json
-Migrations
 LICENSE
 README.md

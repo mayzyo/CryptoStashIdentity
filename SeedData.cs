@@ -39,69 +39,66 @@ namespace CryptoStashIdentity
                     context.Database.Migrate();
 
                     var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-                    var alice = userMgr.FindByNameAsync("alice").Result;
-                    if (alice == null)
+                    var michael = userMgr.FindByNameAsync("michael").Result;
+                    if (michael == null)
                     {
-                        alice = new ApplicationUser
+                        michael = new ApplicationUser
                         {
-                            UserName = "alice",
-                            Email = "AliceSmith@email.com",
+                            UserName = "michael",
+                            Email = "michael@email.com",
                             EmailConfirmed = true,
                         };
-                        var result = userMgr.CreateAsync(alice, "Pass123$").Result;
+                        var result = userMgr.CreateAsync(michael, "Pass123$").Result;
                         if (!result.Succeeded)
                         {
                             throw new Exception(result.Errors.First().Description);
                         }
 
-                        result = userMgr.AddClaimsAsync(alice, new Claim[]{
-                            new Claim(JwtClaimTypes.Name, "Alice Smith"),
-                            new Claim(JwtClaimTypes.GivenName, "Alice"),
-                            new Claim(JwtClaimTypes.FamilyName, "Smith"),
-                            new Claim(JwtClaimTypes.WebSite, "http://alice.com"),
+                        result = userMgr.AddClaimsAsync(michael, new Claim[]{
+                            new Claim(JwtClaimTypes.Name, "Michael May"),
+                            new Claim(JwtClaimTypes.GivenName, "Michael"),
+                            new Claim(JwtClaimTypes.FamilyName, "May")
                         }).Result;
                         if (!result.Succeeded)
                         {
                             throw new Exception(result.Errors.First().Description);
                         }
-                        Log.Debug("alice created");
+                        Log.Debug("michael created");
                     }
                     else
                     {
-                        Log.Debug("alice already exists");
+                        Log.Debug("michael already exists");
                     }
 
-                    var bob = userMgr.FindByNameAsync("bob").Result;
-                    if (bob == null)
+                    var james = userMgr.FindByNameAsync("james").Result;
+                    if (james == null)
                     {
-                        bob = new ApplicationUser
+                        james = new ApplicationUser
                         {
-                            UserName = "bob",
-                            Email = "BobSmith@email.com",
+                            UserName = "james",
+                            Email = "james@email.com",
                             EmailConfirmed = true
                         };
-                        var result = userMgr.CreateAsync(bob, "Pass123$").Result;
+                        var result = userMgr.CreateAsync(james, "Pass123$").Result;
                         if (!result.Succeeded)
                         {
                             throw new Exception(result.Errors.First().Description);
                         }
 
-                        result = userMgr.AddClaimsAsync(bob, new Claim[]{
-                            new Claim(JwtClaimTypes.Name, "Bob Smith"),
-                            new Claim(JwtClaimTypes.GivenName, "Bob"),
-                            new Claim(JwtClaimTypes.FamilyName, "Smith"),
-                            new Claim(JwtClaimTypes.WebSite, "http://bob.com"),
-                            new Claim("location", "somewhere")
+                        result = userMgr.AddClaimsAsync(james, new Claim[]{
+                            new Claim(JwtClaimTypes.Name, "James Mei"),
+                            new Claim(JwtClaimTypes.GivenName, "James"),
+                            new Claim(JwtClaimTypes.FamilyName, "Mei")
                         }).Result;
                         if (!result.Succeeded)
                         {
                             throw new Exception(result.Errors.First().Description);
                         }
-                        Log.Debug("bob created");
+                        Log.Debug("james created");
                     }
                     else
                     {
-                        Log.Debug("bob already exists");
+                        Log.Debug("james already exists");
                     }
                 }
             }
