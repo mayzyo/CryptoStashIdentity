@@ -3,8 +3,12 @@
 FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine AS base
 WORKDIR /app
 EXPOSE 443
+ENV ASPNETCORE_URLS=""
+ENV ASPNETCORE_HTTPS_PORT=""
 ENV PGSQLCONNSTR_IdentityDb=""
 ENV ALLOWED_ORIGINS=""
+ENV ASPNETCORE_Kestrel__Certificates__Default__Path="/certs/fullchain.pem"
+ENV ASPNETCORE_Kestrel__Certificates__Default__KeyPath="/certs/privkey.pem"
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine AS build
 WORKDIR /src
