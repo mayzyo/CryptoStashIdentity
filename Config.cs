@@ -55,10 +55,11 @@ namespace CryptoStashIdentity
         public IEnumerable<Client> Clients =>
             new Client[]
             {
+                // Remove this in production
                 new Client
                 {
-                    ClientId = "postman",
-                    ClientSecrets = { new Secret(Configuration["PostmanSecret"].Sha256()) },
+                    ClientId = "development",
+                    ClientSecrets = { new Secret(Configuration["DevelopmentSecret"].Sha256()) },
 
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
 

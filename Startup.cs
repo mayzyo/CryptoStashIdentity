@@ -13,19 +13,19 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Npgsql;
+using Duende.IdentityServer.Services;
+using Microsoft.Extensions.Logging;
 
 namespace CryptoStashIdentity
 {
     public class Startup
     {
-        public IWebHostEnvironment HostEnvironment { get; }
-        public IConfiguration Configuration { get; }
-
-        public Startup(IWebHostEnvironment environment, IConfiguration configuration)
+        public Startup(IConfiguration configuration)
         {
-            HostEnvironment = environment;
             Configuration = configuration;
         }
+
+        public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -48,6 +48,28 @@ namespace CryptoStashIdentity
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+            {
+                services.AddCors(options =>
+                {
+                    options.AddDefaultPolicy(builder =>
+                    {
+                        builder.WithOrigins(Configuration.GetValue<string>("AllowedHosts") ?? "")
+                            .AllowAnyMethod()
+                            .AllowAnyHeader();
+                    });
+                });
+
+                services.AddSingleton<ICorsPolicyService>((container) =>
+                {
+                    var logger = container.GetRequiredService<ILogger<DefaultCorsPolicyService>>();
+                    return new DefaultCorsPolicyService(logger)
+                    {
+                        AllowAll = true
+                    };
+                });
+            }
 
             var builder = services.AddIdentityServer(options =>
             {
@@ -78,23 +100,14 @@ namespace CryptoStashIdentity
                 });
         }
 
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (HostEnvironment.IsDevelopment())
+            if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
-            // Setup CORS policy based on environment variable.
-            var origins = Environment.GetEnvironmentVariable("ALLOWED_ORIGINS") ?? "*";
-            // CORS setting with CorsPolicyBuilder.
-            app.UseCors(builder =>
-            {
-                builder
-                .WithOrigins(origins)
-                .AllowAnyMethod()
-                .AllowAnyHeader();
-            });
+            app.UseCors();
 
             app.UseStaticFiles();
 
