@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: identity-external
+  namespace: crypto-stash
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 80
+    - port: 443
+      targetPort: 443
+  selector:
+    app: identity
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: identity-connstr
+  namespace: crypto-stash
+type: opaque
+stringData:
+  staging: Server=database.crypto-stash.svc.cluster.local;port=5432;user id=statsuser;password=t0p-Secret;database=identity_prod_db;pooling=true;Timeout=30
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: identity-auth
+  namespace: crypto-stash
+type: opaque
+stringData:
+  notification: t0p-Secret
+  connect: t0p-Secret
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity
+  namespace: crypto-stash
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: identity
+  template:
+    metadata:
+      labels:
+        app: identity
+    spec:
+      imagePullSecrets:
+        - name: registry.cn-shenzhen.aliyuncs.com
+      containers:
+        - name: duende-server
+          image: registry.cn-shenzhen.aliyuncs.com/destinesiastudio/crypto-stash-identity:1.0.0
+          env:
+            - name: SEED
+              value: 'true'
+            - name: CUSTOMCONNSTR_IdentityDb
+              valueFrom:
+                secretKeyRef:
+                  name: identity-connstr
+                  key: prod
+            - name: CryptoStashNotificationSecret
+              valueFrom:
+                secretKeyRef:
+                  name: identity-auth
+                  key: notification
+            - name: CryptoStashConnectSecret
+              valueFrom:
+                secretKeyRef:
+                  name: identity-auth
+                  key: connect
