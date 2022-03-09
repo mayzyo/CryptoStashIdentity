@@ -1,12 +1,5 @@
-﻿// Copyright (c) Duende Software. All rights reserved.
-// See LICENSE in the project root for license information.
-
-
-using Duende.IdentityServer;
+﻿using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
-using IdentityModel;
-using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
 
 namespace CryptoStashIdentity
 {
@@ -34,7 +27,8 @@ namespace CryptoStashIdentity
                 new ApiScope("mining.read"),
                 new ApiScope("finance.write"),
                 new ApiScope("mining.write"),
-                new ApiScope("manage")
+                new ApiScope("manage"),
+                new ApiScope(IdentityServerConstants.LocalApi.ScopeName)
             };
 
         public static IEnumerable<ApiResource> ApiResources =>
@@ -71,7 +65,8 @@ namespace CryptoStashIdentity
                         "mining.read",
                         "finance.write",
                         "mining.write",
-                        "manage"
+                        "manage",
+                        IdentityServerConstants.LocalApi.ScopeName
                     }
                 },
                 new Client
@@ -102,7 +97,8 @@ namespace CryptoStashIdentity
                         "finance.read",
                         "mining.write",
                         "finance.write",
-                        "manage"
+                        "manage",
+                        IdentityServerConstants.LocalApi.ScopeName
                     }
                 },
                 new Client
@@ -126,7 +122,8 @@ namespace CryptoStashIdentity
                         "mining.read",
                         "finance.read",
                         "mining.write",
-                        "finance.write"
+                        "finance.write",
+                        IdentityServerConstants.LocalApi.ScopeName
                     }
                 }
             };

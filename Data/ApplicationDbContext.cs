@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using IdentityServerHost.Models;
+using CryptoStashIdentity.Models;
 
 namespace CryptoStashIdentity.Data
 {
