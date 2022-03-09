@@ -1,0 +1,28 @@
+version: "3.3"
+services:
+  database:
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=abcD1234
+  server:
+    image: crypto-stash-identity:latest
+    network_mode: host
+    depends_on:
+      - database
+    # ports:
+    #   - 5002:443
+      # - 5002:80
+    environment:
+      - SEED=true
+      - ASPNETCORE_ENVIRONMENT=Development
+      - IdentityDb=abcD1234
+      - DevelopmentSecret=T0p-Secret
+      - CryptoStashNotificationSecret=T0p-Secret
+      - CryptoStashConnectSecret=T0p-Secret
+      - ASPNETCORE_HTTPS_PORT=443
+      - ASPNETCORE_URLS=https://+443
+      - CUSTOMCONNSTR_IdentityDb=Server=192.168.122.93;port=5432;user id=postgres;database=postgres;pooling=true;
+    volumes:
+      - $HOME/certs:/certs
